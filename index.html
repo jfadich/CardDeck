@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <link href="deck_style.css" type="text/css" rel="stylesheet" />
+        <script src="deck.js" type="application/javascript"></script>
+    </head>
+    <body>
+        <h1>It's a deck of cards! <a href="javascript:game.pickCard(john);">Click to draw a card</a></h1>
+        <div id="canvas">
+            Game goes here!
+        </div>
+    </body>
+    <script type="application/javascript">
+        var game = new GameBoard(document.getElementById("canvas"));
+        game.init();
+        
+        var john = new Player("john");
+        game.setOnClick = "javascript:game.print('le');";
+        game.print("Welcome to my Game!");
+        window.setTimeout(function() { 
+                          document.getElementById("playerHand").style.borderColor = "black"}, 5000) ;
+        
+    </script>
+</html>
