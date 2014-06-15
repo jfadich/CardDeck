@@ -71,6 +71,7 @@
     height: 124px;
     width:600px;
     font-family: monospace;
+    overflow: scroll;
 }
 
 .screen p {

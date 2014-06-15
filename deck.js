@@ -120,16 +120,17 @@ function Card(suit, rank)
     }
 }
 
-function GameBoard(canvas)
+function GameBoard()
 {
-    this.d = new Deck()
-    this.canvas = canvas;
-    this.handLimit = 5;
-    
-    this.d.init(true);
 
-    this.init = function()
+    this.handLimit = 5;
+
+    this.init = function(canvas)
     {
+        this.d = new Deck();
+        this.d.init(true);
+        
+        this.canvas = canvas;
         this.canvas.innerHTML = ""; // reset canvas
         this.canvas.className = "canvas";
 
@@ -191,13 +192,16 @@ function GameBoard(canvas)
     {
         if (player.hand.length < this.handLimit)
         {
-            player.hand.push(this.d.getTopCard());
+            drawnCard = this.d.getTopCard()
+            player.hand.push(drawnCard);
             this.drawHand(player);
+            this.print("You got the " + drawnCard.getRank(false) + " of " + drawnCard.suit + ".");
         }
         else
         { 
             this.handContainer.style.borderColor = "red";
             timer = window.setTimeout(function() { document.getElementById("playerHand").style.borderColor = "black"; }, 1000);
+            this.print("Your hand is full.");
         }
     }
     
@@ -205,11 +209,11 @@ function GameBoard(canvas)
     {
         var cardElement
         
-        for (card in d.cards)
-        {
-            cardElement = document.getElementById[d.cards.getId()];
-            cardElement.onclick = onClick;
-        }
+        //for (card in d.cards)
+        //{
+        //    cardElement = document.getElementById[d.cards.getId()];
+        //    cardElement.onclick = onClick;
+        //}
         
     }
 }
@@ -227,5 +231,17 @@ function Player(name)
 
 function GoFish()
 {
+    this.init() = function(gameCanvas)
+    {
+        this.player = new Player(prompt("What's your name?"));
+        this.computer = new Player("Computer");
+        this.game = new GameBoard();
+        this.game.init(gameCanvas);
+        
+    }
     
+    this.checkPairs()
+    {
+        
+    }
 }

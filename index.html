@@ -11,14 +11,11 @@
         </div>
     </body>
     <script type="application/javascript">
-        var game = new GameBoard(document.getElementById("canvas"));
-        game.init();
+        var game = new GameBoard();
+        game.init(document.getElementById("canvas"));
         
         var john = new Player("john");
-        game.setOnClick = "javascript:game.print('le');";
         game.print("Welcome to my Game!");
-        window.setTimeout(function() { 
-                          document.getElementById("playerHand").style.borderColor = "black"}, 5000) ;
         
     </script>
 </html>
