@@ -45,7 +45,7 @@ function Deck()
     
     this.peekTopCard = function()
     {
-        return this.cards[this.cards.length];
+        return this.cards[this.cards.length -1];
     }
     
     this.shuffle = function(shuffleCount)
