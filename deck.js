@@ -48,6 +48,18 @@ function Deck()
         return this.cards[this.cards.length -1];
     }
     
+    this.getCardById = function(cardId)
+    {
+        for(card in this.cards)
+        {
+            if (this.cards[card].getId() == cardId)
+            {
+                console.log(this.cards[card].getId());
+                return this.cards[card];
+                
+            }
+        }
+    }
     this.shuffle = function(shuffleCount)
     {
         if (!this.isInit)
@@ -109,6 +121,12 @@ function Card(suit, rank)
         return rankReturn;
     }
     
+    this.setOnClick = function (onClick)
+    {
+        var cardElement = document.getElementById(this.getId());
+        cardElement.addEventListener("click", onClick);        
+    }
+
     this.getId = function()
     {
         return this.getRank() + this.suit;
@@ -155,6 +173,11 @@ function GameBoard()
 
     // Display Methods
     
+    this.handCardClickEvent = function(event) 
+    { 
+        console.log(event.srcElement.id + " Clicked"); // Default click event
+    }
+    
     this.drawCard = function(parentElement, card)
     {
         var cardContainer = document.createElement("span");
@@ -163,7 +186,7 @@ function GameBoard()
         cardContainer.id = card.getId();
         cardContainer.innerText = card.getRank();
         parentElement.appendChild(cardContainer);
-        //parentElement.innerHTML += '<div class="card ' + card.suit.toLowerCase() + '">' + card.getRank() + '</div>';
+        card.setOnClick(this.handCardClickEvent);
     }
     
     this.drawDeck = function(deck) {}
@@ -204,18 +227,6 @@ function GameBoard()
             this.print("Your hand is full.");
         }
     }
-    
-    this.setOnClick = function(onClick)
-    {
-        var cardElement
-        
-        //for (card in d.cards)
-        //{
-        //    cardElement = document.getElementById[d.cards.getId()];
-        //    cardElement.onclick = onClick;
-        //}
-        
-    }
 }
 
 function Player(name)
@@ -226,6 +237,16 @@ function Player(name)
     this.getHand = function()
     {
         return this.hand;
+    }
+    this.getCardById = function(cardId)
+    {
+        for(card in this.hand)
+        {
+            if (this.hand[card].getId() == cardId)
+            {
+                return this.hand[card];   
+            }
+        }
     }
 }
 
@@ -240,6 +261,19 @@ function GoFish()
         
     }
     
+    game.handCardClickEvent = function(event) 
+    {
+        alert(this.player.getCardById(event.srcElement.id));
+    }
+
+    this.startGame()
+    {
+        var playing = false;
+        while(playing)
+        {
+            // main controller
+        }
+    }
     this.checkPairs()
     {
         
