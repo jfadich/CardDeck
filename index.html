@@ -5,17 +5,18 @@
         <script src="deck.js" type="application/javascript"></script>
     </head>
     <body>
-        <h1>It's a deck of cards! <a href="javascript:game.pickCard(john);">Click to draw a card</a></h1>
+        <h1>Play go fish!</h1>
         <div id="canvas">
             Game goes here!
         </div>
     </body>
     <script type="application/javascript">
-        var game = new GameBoard();
-        game.init(document.getElementById("canvas"));
+        //var game = new GameBoard();
+        //game.init(document.getElementById("canvas"));
         
-        var john = new Player("john");
-        game.print("Welcome to my Game!");
-        
+        //var john = new Player("john");
+        //game.print("Welcome to my Game!");
+        var game = new GoFish(document.getElementById("canvas"));
+        game.startGame();
     </script>
 </html>
