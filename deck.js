@@ -225,22 +225,29 @@ function GameBoard()
     
     // Control Methods
     
-    this.pickCard = function(player, draw)
+    this.pickCard = function(player, pickCount, draw)
     {
-        if (player.hand.length < this.handLimit)
+        pickCount = setDefault(pickCount, 1);
+        draw = setDefault(draw,false);
+        
+        for(i = 0; i < pickCount; i++)
         {
-            drawnCard = this.d.getTopCard()
-            player.hand.push(drawnCard);
-            if(draw)
-                this.drawHand(player);
-            //this.print(player.name + " got the " + drawnCard.getRank(false) + " of " + drawnCard.suit + ".");
+            if (player.hand.length < this.handLimit)
+            {
+                drawnCard = this.d.getTopCard()
+                player.hand.push(drawnCard);
+
+                //this.print(player.name + " got the " + drawnCard.getRank(false) + " of " + drawnCard.suit + ".");
+            }
+            else
+            { 
+                this.handContainer.style.borderColor = "red";
+                timer = window.setTimeout(function() { document.getElementById("playerHand").style.borderColor = "black"; }, 1000);
+                this.print(player.name + "'s hand is full.");
+            }
         }
-        else
-        { 
-            this.handContainer.style.borderColor = "red";
-            timer = window.setTimeout(function() { document.getElementById("playerHand").style.borderColor = "black"; }, 1000);
-            this.print(player.name + "'s hand is full.");
-        }
+        if(draw)
+            this.drawHand(player);
     }
 }
 
@@ -287,12 +294,9 @@ function GoFish(gameCanvas)
             game.playerChooseCard(card);
         }      
         
-        for(i = 0; i < this.game.handLimit; i++)
-        {
-            this.game.pickCard(this.player, true);
-            this.game.pickCard(this.computer, false);
-        }
-
+        this.game.pickCard(this.player, this.game.handLimit, true);
+        this.game.pickCard(this.computer, this.game.handLimit, false);
+        
 
     this.startGame = function()
     {
@@ -300,6 +304,7 @@ function GoFish(gameCanvas)
         
         this.game.print("Welcome to Go Fish!");
         this.game.print("Please pick a card");
+        this.checkHandForPairs(this.player);
     }
     
     this.initOnClick = function()
@@ -373,9 +378,52 @@ function GoFish(gameCanvas)
 
     }
     
+    this.checkHandForPairs = function(player)
+    {
+        var matchedCard;
+        var pair = [];
+        for (cardToMatch in player.hand)
+        {
+            for(card in player.hand)
+            {
+                if(player.hand[cardToMatch].getRank() == player.hand[card].getRank() && player.hand[cardToMatch].getSuit() != player.hand[card].getSuit())
+                {
+                    pair.push(player.hand.splice(card,1)[0]);
+                    pair.push(player.hand.splice(cardToMatch,1)[0]);
+                    this.playerCardPairs.push(pair);
+                    console.log(this.playerCardPairs);
+                    this.game.print(player.name + " drew a duplicate " + pair[0].getRank(false)); 
+                }
+            }
+            /*
+            matchedCard = this.askForCard(player,player.hand[card]);
+            if(matchedCard != false)
+            {
+                console.log(player.hand[card].getSuit() == matchedCard.getSuit());
+                if(player.hand[card].getSuit() != matchedCard.getSuit())
+                {
+                    pair.push(player.hand.splice(card,1)[0]);
+                    pair.push(player.hand.splice(this.player.hand.indexOf(matchedCard),1)[0]);
+                    this.playerCardPairs.push(pair);
+                    this.game.drawHand(player);
+                    this.game.drawCard(this.cardPairContainer, player.hand[card]);
+                    console.log(this.playerCardPairs);
+                    this.game.print(player.name + " drew a duplicate " + player.hand[card].getRank(false)); 
+                }
+            } */
+        }
+        if(pair.length > 0)
+        {
+            this.game.drawCard(this.cardPairContainer, pair[0]);
+            this.game.drawCard(this.cardPairContainer, pair[1]);
+            this.game.pickCard(player, pair.length, true);
+            this.game.drawHand(player);
+            this.initOnClick();
+        }
+    }
+    
     this.askForCard = function(player, cardToMatch)
     {
-        console.log(cardToMatch);
         for(card in player.hand)
         {
             if (player.hand[card].getRank() == cardToMatch.getRank())
