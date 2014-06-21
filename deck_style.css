@@ -2,8 +2,8 @@
 .canvas {
     width: 1142px;
     padding: 8px;
-    background: #131670;
-    max-height: 684px;
+    background: #06F;
+    max-height: 1000px;
 }
 
 .card {
@@ -49,18 +49,18 @@
 .clubs {
     background-position: -196px 40px;
 }
-
+.left {
+	margin:10px;
+	width:550px;
+	float:left;
+}
 .playerHand {
     position: relative;
-    float: left;
     padding:5px;
     background: #733F3F;
     min-width:80px;
-    max-width: 445px;
+    width: 610px;
     height:124px;
-    overflow-x: scroll; /* Not working as expected */
-    overflow-y: hidden;
-    white-space: nowrap;
     border:2px solid black;
 }
 
@@ -68,18 +68,29 @@
     float: right;
     background-color: black;
     color:white;
-    height: 124px;
-    width:600px;
-    font-family: monospace;
-    overflow: scroll;
+    height:800px;
+    width:500px;
+    font-family:"Courier New", Courier, monospace;
+	font-size:25px;
+    overflow-y: scroll;
 }
 
 .screen p {
     padding:2px;
     margin:4px;
+	border-bottom:dashed 1px #666666;
 }
 
-.header:after, .canvas:after {
+.cardPairList {
+	width:560px;
+}
+.pair {
+	border-right:thin solid #069;
+	margin:2px;
+	padding:3px;
+	float:left;
+}
+.left:after, .canvas:after, .cardPairList:after, .playerHand:after {
     clear: both;
     content: " ";
     display: block;
