@@ -201,17 +201,16 @@ function GameBoard()
     
     this.drawCard = function(parentElement, card)
     {
-        var cardContainer = document.createElement("span");
+        var cardContainer;
         if(typeof card == "undefined")
 		{
 			return -1;
 		}
 		else
 		{
-			cardContainer.className = "card " + card.getSuit().toLowerCase();
+			cardContainer = this.addElement("span", "card " + card.getSuit().toLowerCase(), parentElement)
 			cardContainer.id = card.getId();
 			cardContainer.innerText = card.getRank();
-			parentElement.appendChild(cardContainer);
 			//card.setOnClick(this.handCardClickEvent);
 		}
     }
@@ -421,6 +420,8 @@ function GoFish(gameCanvas)
 			this.game.pickCard(loser);
 			
 			this.drawPairs();
+			this.checkHandForPairs(winner);
+			this.checkHandForPairs(loser);
 			this.game.drawHand(this.game.players[0]);
 			this.initOnClick();
 
@@ -464,46 +465,49 @@ function GoFish(gameCanvas)
     
     this.checkHandForPairs = function(player)
     {
-        var matchedCard, pairList, pair;
-        pair = [];
+        var matchedCard, pairList;
 		pairList = [];
-			
+		
         for (cardToMatch in player.hand)
         {
             for(card in player.hand)
             {
-				console.log(cardToMatch)
-				console.log(card)
                 if(player.hand[cardToMatch].getRank() == player.hand[card].getRank() && player.hand[cardToMatch].getSuit() != player.hand[card].getSuit())
                 {
-                    pair.push(player.hand.splice(card,1)[0]);
-                    pair.push(player.hand.splice(cardToMatch,1)[0]);
-                    player.p.cardPairs.push(pair);
+					var pair = [];
+                    pair.push(player.hand.splice(player.hand.indexOf(player.hand[card]),1)[0]);
+                    pair.push(player.hand.splice(player.hand.indexOf(player.hand[cardToMatch]),1)[0]);
                     pairList.push(pair);
                     this.game.print(player.name + " drew a pair of " + pair[0].getRank(false) + "'s"); 
 					pair = [];
                 }
             }
         }
-		
-		if(player.isNPC)
+
+		if(pairList.length > 0) // If player had a match, check hand for any new matches 
 		{
-			console.log(player.name + " Card Pairs: ");
-            console.log(player.p.cardPairs);
-		}
-		else
-		{
-			this.drawPairs();
-		}
-		
-		if(pairList.length > 0) // If player had a match, draw new cards then check hand for any new matches 
-		{
-			if( this.game.d.cards.length > 2 * pairList.length)
+			var cardCount = 2 * pairList.length;
+			if( this.game.d.cards.length > cardCount)
 			{
-				this.game.pickCard(player,2 * pairList.length);
+				this.game.pickCard(player, cardCount);
 			}
+			else
+			{
+				this.game.pickCard(player, cardCount - this.game.d.cards.length)
+			}
+			
+			if(player.isNPC)
+			{
+				console.log(player.name + " Card Pairs: ");
+				console.log(player.p.cardPairs);
+			}
+			else
+			{
+				this.drawPairs();
+			}
+			player.p.cardPairs.push(pairList);
 			this.checkHandForPairs(player);
-			this.initOnClick();
+			//this.initOnClick();
 		}
     }
     
