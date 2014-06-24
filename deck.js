@@ -264,7 +264,7 @@ function GameBoard()
 		if(pickCount <= 0)
 		{
 			this.print("Out of cards!!");
-			this.endGame();
+			//this.endGame();
 			return;
 		}
 		
@@ -351,8 +351,8 @@ function GoFish(gameCanvas)
 	{
 		var winnerText;
 		console.log(this);
-		var pairCountPlayer1 = this.players[0].p.cardPairs.length;
-		var pairCountPlayer2 = this.players[1].p.cardPairs.length;
+		var pairCountPlayer1 = this.game.players[0].p.cardPairs.length;
+		var pairCountPlayer2 = this.game.players[1].p.cardPairs.length;
 		
 		if(pairCountPlayer1 == pairCountPlayer2)
 		{
@@ -360,22 +360,20 @@ function GoFish(gameCanvas)
 		}
 		else if(pairCountPlayer1 > pairCountPlayer2)
 		{
-			winnerText =  this.players[0].name + " wins!!";
+			winnerText =  this.game.players[0].name + " wins!!";
 		}
 		else
 		{
-			winnerText =  this.players[1].name + " wins!!";
+			winnerText =  this.game.players[1].name + " wins!!";
 		}		
-		this.print("-------------------------------");
-		this.print("-  ");
-		this.print("- " + this.players[0].name + " ha " + pairCountPlayer1 + " pairs.");
-		this.print("- " + this.players[1].name + " ha " + pairCountPlayer2 + " pairs.");
-		this.print("-  ");
-		this.print("-  " + winnerText);
-		this.print("-------------------------------");
-		console.log(this.handContainer.innerHTML);
-		this.handContainer.innerHTML = "<h1>Game Over</h1>";
-		alert("game over");
+		this.game.print("-------------------------------");
+		this.game.print("-  ");
+		this.game.print("- " + this.game.players[0].name + " ha " + pairCountPlayer1 + " pairs.");
+		this.game.print("- " + this.game.players[1].name + " ha " + pairCountPlayer2 + " pairs.");
+		this.game.print("-  ");
+		this.game.print("-  " + winnerText);
+		this.game.print("-------------------------------");
+		this.game.handContainer.innerHTML = "<h1>Game Over</h1>";
 	}
 	this.handCardClickEvent = function(event)
         {
@@ -400,9 +398,10 @@ function GoFish(gameCanvas)
 		var label = this.game.addElement("h1", null,this.playerPairStage);
 		label.innerText = "Your Matches";
 		
-		for(pair in this.game.players[0].p["cardPairs"])
+		for(pair in this.game.players[0].p.cardPairs)
 		{
 			pairElement = this.game.addElement("div","pair", this.playerPairStage);
+            console.log(this.game.players[0].p.cardPairs);
 			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][0]);
 			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][1]);
 		}
@@ -478,12 +477,14 @@ function GoFish(gameCanvas)
                     pair.push(player.hand.splice(player.hand.indexOf(player.hand[card]),1)[0]);
                     pair.push(player.hand.splice(player.hand.indexOf(player.hand[cardToMatch]),1)[0]);
                     pairList.push(pair);
+                    player.p.cardPairs.push(pair);
                     this.game.print(player.name + " drew a pair of " + pair[0].getRank(false) + "'s"); 
 					pair = [];
                 }
             }
         }
-
+        console.log("card pair check:");
+        console.log(pairList);
 		if(pairList.length > 0) // If player had a match, check hand for any new matches 
 		{
 			var cardCount = 2 * pairList.length;
@@ -491,7 +492,11 @@ function GoFish(gameCanvas)
 			{
 				this.game.pickCard(player, cardCount);
 			}
-			else
+			else if(cardCount == 0)
+            {
+                console.log("out of cards. Can't draw hand back up to limit");
+            }
+            else
 			{
 				this.game.pickCard(player, cardCount - this.game.d.cards.length)
 			}
@@ -505,9 +510,19 @@ function GoFish(gameCanvas)
 			{
 				this.drawPairs();
 			}
-			player.p.cardPairs.push(pairList);
-			this.checkHandForPairs(player);
-			//this.initOnClick();
+			//player.p.cardPairs.push(pairList);
+            //console.log(pairList)
+                        console.log(this.game.d.cards.length);
+            if (this.game.d.cards.length < 2)
+            {
+                alert(this.game.d.cards.length);
+                this.endGame();   
+            }
+            else
+            {
+                //this.checkHandForPairs(player);
+            }
+			this.initOnClick();
 		}
     }
     
