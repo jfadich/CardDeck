@@ -368,8 +368,8 @@ function GoFish(gameCanvas)
 		}		
 		this.game.print("-------------------------------");
 		this.game.print("-  ");
-		this.game.print("- " + this.game.players[0].name + " ha " + pairCountPlayer1 + " pairs.");
-		this.game.print("- " + this.game.players[1].name + " ha " + pairCountPlayer2 + " pairs.");
+		this.game.print("- " + this.game.players[0].name + " has " + pairCountPlayer1 + " pairs.");
+		this.game.print("- " + this.game.players[1].name + " has " + pairCountPlayer2 + " pairs.");
 		this.game.print("-  ");
 		this.game.print("-  " + winnerText);
 		this.game.print("-------------------------------");
