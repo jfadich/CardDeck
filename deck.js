@@ -515,7 +515,6 @@ function GoFish(gameCanvas)
                         console.log(this.game.d.cards.length);
             if (this.game.d.cards.length < 2)
             {
-                alert(this.game.d.cards.length);
                 this.endGame();   
             }
             else
