@@ -177,19 +177,10 @@ function GameBoard()
         this.d = new Deck();
         this.d.init(true);
         
-        this.canvas = canvas;
-        this.canvas.innerHTML = ""; // reset canvas
-        this.canvas.className = "canvas";
-
         // Create header
-		this.leftContainer = this.addElement("div", "left");
-		var label = this.addElement("h1",null,this.leftContainer);
-		label.innerText = "Your Hand";
-		this.handContainer = this.addElement("div", "playerHand", this.leftContainer);
-		this.handContainer.id = "playerHand";
-		this.screen = this.addElement("div","screen");
-        
-
+		this.leftContainer = document.getElementById("left");
+		this.handContainer = document.getElementById("playerHand").querySelector("p");
+		this.screen = document.getElementById("screen");
     }
 
     // Display Methods
@@ -231,7 +222,7 @@ function GameBoard()
     
     this.print = function(printText)
     {
-        var textContainer = document.createElement("p");
+        var textContainer = document.createElement("li");
         textContainer.innerText = printText;
         this.screen.appendChild(textContainer);
         this.screen.scrollTop = this.screen.scrollHeight;
@@ -321,13 +312,13 @@ function Player(name, isNPC)
     }
 }
 
-function GoFish(gameCanvas)
+function GoFish()
 {      
 
     this.startGame = function()
     {
         this.game = new GameBoard();
-        this.game.init(gameCanvas);
+        this.game.init();
 		
 		this.game.addPlayer(new Player(prompt("What's your name?"), false));
 		this.game.addPlayer(new Player("Computer", true));
@@ -395,8 +386,6 @@ function GoFish(gameCanvas)
 	{
 		var pairElement;
 		this.playerPairStage.innerHTML = ""; // Reset for redraw
-		var label = this.game.addElement("h1", null,this.playerPairStage);
-		label.innerText = "Your Matches";
 		
 		for(pair in this.game.players[0].p.cardPairs)
 		{

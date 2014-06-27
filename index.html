@@ -3,20 +3,38 @@
     <head>
         <link href="deck_style.css" type="text/css" rel="stylesheet" />
         <script src="deck.js" type="application/javascript"></script>
+    	<title>Go Fish!</title>
     </head>
     <body>
-        <h1>Play go fish!</h1>
-        <div id="canvas">
-            Game goes here!
-        </div>
+    	<header>
+        	<h1>Play Go Fish!</h1>
+            <nav>
+            	<ul>
+                	<li><a href="javascript:game.startGame();">Start Game!</a></li>
+                </ul>
+            </nav>
+        </header>
+        <main>
+        	<div class="left" id="left">
+                <section id="playerHand" class="hand">
+                    <h1>Your Hand</h1>
+                    <p></p>
+                </section>
+                <section id="playerMatches" class="pairList">
+                    <h1>Your Matches</h1>
+                    <p></p>
+                </section>
+            </div>
+            <section id="screen">
+            	<ul>
+                	<li>Welcome to Go Fish!</li>
+                </ul>
+            </section>
+            <br class="clear">
+        </main>
     </body>
     <script type="application/javascript">
-        //var game = new GameBoard();
-        //game.init(document.getElementById("canvas"));
+        var game = new GoFish();
         
-        //var john = new Player("john");
-        //game.print("Welcome to my Game!");
-        var game = new GoFish(document.getElementById("canvas"));
-        game.startGame();
     </script>
 </html>

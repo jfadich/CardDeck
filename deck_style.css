@@ -1,8 +1,8 @@
 
-.canvas {
-    width: 1142px;
-    padding: 8px;
-    background: #06F;
+main {
+	display:block;
+    width: 100%;
+    background: #838271;
     max-height: 1000px;
 }
 
@@ -50,48 +50,54 @@
     background-position: -196px 40px;
 }
 .left {
-	margin:10px;
-	width:550px;
+	width:60%;
 	float:left;
 }
-.playerHand {
+.hand {
+	display:block;
     position: relative;
     padding:5px;
-    background: #733F3F;
+    background: #998575;
     min-width:80px;
-    width: 610px;
-    height:124px;
-    border:2px solid black;
+	max-width: 610px;
+    height:180px;
+    border:2px solid #CFB86A;
 }
 
-.screen {
+#screen {
     float: right;
-    background-color: black;
+    background-color: #4D4D4D;
     color:white;
     height:800px;
-    width:500px;
-    font-family:"Courier New", Courier, monospace;
+    width:39%;
+    font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size:25px;
-    overflow-y: scroll;
+    overflow-y: hidden;
+	border-left:#CFB86A solid 1px;
+}
+#screen ul {
+	margin:0;
+	padding:0;
+}
+#screen li {
+	margin:0;
+	padding:5px;
+	list-style:none;
 }
 
-.screen p {
-    padding:2px;
-    margin:4px;
-	border-bottom:dashed 1px #666666;
+#screen li:nth-child(odd) {
+	background-color:#998575;
 }
 
-.cardPairList {
+.pairList {
 	width:560px;
 }
 .pair {
-	border-right:thin solid #069;
+	border-right:thin solid #CC5F39;
 	margin:2px;
 	padding:3px;
 	float:left;
 }
-.left:after, .canvas:after, .cardPairList:after, .playerHand:after {
+.clear { /* .left:after, .canvas:after, .cardPairList:after, .playerHand:after */
     clear: both;
-    content: " ";
-    display: block;
 }
