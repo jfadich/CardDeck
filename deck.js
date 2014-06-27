@@ -130,18 +130,9 @@ function Card(suit, rank)
     
     this.onClick = function() {}
     
-    this.drawOnClick = function (remove)
+    this.drawOnClick = function ()
     {
-		remove = setDefault(remove, false);
-        var cardElement = document.getElementById(this.getId());
-		if(!remove)
-		{
-        	cardElement.addEventListener("click", this.onClick);  
-		}
-		else
-		{
-			cardElement.removeEventListener("click", this.onClick); 
-		}
+        	$("#" + this.getId()).on("click", this.onClick);  
     }
     
     this.setOnClick  = function(gameObject)
@@ -178,9 +169,9 @@ function GameBoard()
         this.d.init(true);
         
         // Create header
-		this.leftContainer = document.getElementById("left");
-		this.handContainer = document.getElementById("playerHand").querySelector("p");
-		this.screen = document.getElementById("screen");
+		this.leftContainer = $("#left");
+		this.handContainer = $("#playerHand p");
+		this.screen = $("#screen");
     }
 
     // Display Methods
@@ -199,10 +190,12 @@ function GameBoard()
 		}
 		else
 		{
-			cardContainer = this.addElement("span", "card " + card.getSuit().toLowerCase(), parentElement)
-			cardContainer.id = card.getId();
-			cardContainer.innerText = card.getRank();
-			//card.setOnClick(this.handCardClickEvent);
+			cardContainer = $("<span></span");
+			cardContainer.attr({ id : card.getId() });
+			cardContainer.addClass("card");
+			cardContainer.text(card.getRank());
+			cardContainer.addClass(card.getSuit().toLowerCase());
+			parentElement.append(cardContainer);
 		}
     }
     
@@ -211,7 +204,7 @@ function GameBoard()
     this.drawHand = function(player) 
     {
         hand = player.getHand();
-        this.handContainer.innerHTML = ""; // Reset element to redraw
+        this.handContainer.empty(); // Reset element to redraw
         for (card in hand)
         {
             this.drawCard(this.handContainer,hand[card]);
@@ -222,22 +215,13 @@ function GameBoard()
     
     this.print = function(printText)
     {
-        var textContainer = document.createElement("li");
-        textContainer.innerText = printText;
-        this.screen.appendChild(textContainer);
-        this.screen.scrollTop = this.screen.scrollHeight;
+        var textContainer = $("<li></li>");
+        textContainer.text(printText);
+        textContainer.appendTo(this.screen).hide().slideDown();
+        this.screen.animate({ scrollTop: this.screen.prop("scrollHeight") });
     }
     
     // Control Methods
-	this.addElement = function(tagName, styleClass, parentElement)
-	{
-		var element;
-		parentElement = setDefault(parentElement, this.canvas);
-		element = document.createElement(tagName);
-		element.className = styleClass;
-		parentElement.appendChild(element);
-		return element;
-	}
 	
     this.addPlayer = function(player)
 	{
@@ -326,7 +310,7 @@ function GoFish()
 		this.game.players[1].p["cardPairs"] = [];
 		this.game.endGame = this.endGame;
     
-		this.playerPairStage = this.game.addElement("div", "cardPairList", this.game.leftContainer);
+		this.playerPairStage = $("<div></div>").addClass("cardPaisrList").appendTo(this.game.leftContainer);
 		
 		this.game.print("Welcome to Go Fish!");
         this.game.pickCard(this.game.players[0], this.game.handLimit);
@@ -367,11 +351,11 @@ function GoFish()
 		this.game.handContainer.innerHTML = "<h1>Game Over</h1>";
 	}
 	this.handCardClickEvent = function(event)
-        {
-            var card = game.game.players[0].getCardById(event.srcElement.id);
-            //alert(this.player.getCardById(event.srcElement.id));
-            game.playerChooseCard(card);
-        }   
+	{
+		var card = game.game.players[0].getCardById($(this).attr("id"));
+		//alert(this.player.getCardById(event.srcElement.id));
+		game.playerChooseCard(card);
+	}   
 		
     this.initOnClick = function()
     {
@@ -385,11 +369,11 @@ function GoFish()
 	this.drawPairs = function()
 	{
 		var pairElement;
-		this.playerPairStage.innerHTML = ""; // Reset for redraw
+		this.playerPairStage.empty(); // Reset for redraw
 		
 		for(pair in this.game.players[0].p.cardPairs)
 		{
-			pairElement = this.game.addElement("div","pair", this.playerPairStage);
+			pairElement = $("<div></div>").addClass("pair").appendTo(this.playerPairStage);
             console.log(this.game.players[0].p.cardPairs);
 			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][0]);
 			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][1]);
