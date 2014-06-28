@@ -61,9 +61,7 @@ function Deck()
         {
             if (this.cards[card].getId() == cardId)
             {
-                console.log(this.cards[card].getId());
                 return this.cards[card];
-                
             }
         }
     }
@@ -128,19 +126,6 @@ function Card(suit, rank)
         return rankReturn;
     }
     
-    this.onClick = function() {}
-    
-    this.drawOnClick = function ()
-    {
-        	$("#" + this.getId()).on("click", this.onClick);  
-    }
-    
-    this.setOnClick  = function(gameObject)
-    {
-         
-        this.onClick = gameObject.handCardClickEvent;
-    }
-    
     this.getId = function()
     {
         return this.getRank() + this.suit;
@@ -176,11 +161,6 @@ function GameBoard()
 
     // Display Methods
     
-    this.handCardClickEvent = function(event) 
-    { 
-        console.log(event.srcElement.id + " Clicked"); // Default click event
-    }
-    
     this.drawCard = function(parentElement, card)
     {
         var cardContainer;
@@ -208,7 +188,6 @@ function GameBoard()
         for (card in hand)
         {
             this.drawCard(this.handContainer,hand[card]);
-			hand[card].onClick = this.handCardClickEvent;
         }
         
     }
@@ -290,9 +269,20 @@ function Player(name, isNPC)
         {
             if (this.hand[card].getId() == cardId)
             {
-                return this.hand[card];   
+                return this.hand.splice(this.hand.indexOf(card),1)[0]; 
             }
         }
+    }
+	this.checkCardById = function(cardId)
+    {
+        for(card in this.hand)
+        {
+            if (this.hand[card].getId() == cardId)
+            {
+                return this.hand[card];   // loser.hand.splice(loser.hand.indexOf(loserCard),1)[0]
+            }
+        }
+		return false;
     }
 }
 
@@ -317,7 +307,6 @@ function GoFish()
         this.game.pickCard(this.game.players[1], this.game.handLimit);
         this.checkHandForPairs(this.game.players[0]);
 		this.checkHandForPairs(this.game.players[1]);
-		this.initOnClick();
 
         this.game.print("Please pick a card");
     }
@@ -350,21 +339,13 @@ function GoFish()
 		this.game.print("-------------------------------");
 		this.game.handContainer.innerHTML = "<h1>Game Over</h1>";
 	}
-	this.handCardClickEvent = function(event)
-	{
-		var card = game.game.players[0].getCardById($(this).attr("id"));
-		//alert(this.player.getCardById(event.srcElement.id));
+
+	$("#playerHand").on("click", ".card", function() {
+		var card = game.game.players[0].checkCardById($(this).attr("id"));
+		alert(card.getId());
 		game.playerChooseCard(card);
-	}   
-		
-    this.initOnClick = function()
-    {
-        for(card in this.game.players[0].hand)
-        {
-            this.game.players[0].hand[card].setOnClick(this);
-            this.game.players[0].hand[card].drawOnClick();
-        }
-    }
+	
+	});
 	
 	this.drawPairs = function()
 	{
@@ -395,8 +376,6 @@ function GoFish()
 			this.checkHandForPairs(winner);
 			this.checkHandForPairs(loser);
 			this.game.drawHand(this.game.players[0]);
-			this.initOnClick();
-
 	}
 	
     this.playerChooseCard = function(pickedCard)
@@ -447,17 +426,15 @@ function GoFish()
                 if(player.hand[cardToMatch].getRank() == player.hand[card].getRank() && player.hand[cardToMatch].getSuit() != player.hand[card].getSuit())
                 {
 					var pair = [];
-                    pair.push(player.hand.splice(player.hand.indexOf(player.hand[card]),1)[0]);
-                    pair.push(player.hand.splice(player.hand.indexOf(player.hand[cardToMatch]),1)[0]);
+                    pair.push(player.getCardById(player.hand[card].getId()));
+                    pair.push(player.getCardById(player.hand[cardToMatch].getId()));
                     pairList.push(pair);
                     player.p.cardPairs.push(pair);
                     this.game.print(player.name + " drew a pair of " + pair[0].getRank(false) + "'s"); 
-					pair = [];
                 }
             }
         }
-        console.log("card pair check:");
-        console.log(pairList);
+
 		if(pairList.length > 0) // If player had a match, check hand for any new matches 
 		{
 			var cardCount = 2 * pairList.length;
@@ -494,7 +471,6 @@ function GoFish()
             {
                 //this.checkHandForPairs(player);
             }
-			this.initOnClick();
 		}
     }
     
