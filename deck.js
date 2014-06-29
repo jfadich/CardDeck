@@ -414,13 +414,14 @@ function GoFish()
     this.checkHandForPairs = function(player)
     {
         var pairList = [];
+		var handCopy = [];
 		
-		var handCopy = player.hand.slice();
+		handCopy = player.hand.slice();
 		for(card1Index = handCopy.length -1; card1Index >= 0; card1Index--)
 		{
 			for(card2Index = card1Index -1; card2Index >= 0; card2Index--)
 			{
-				if(handCopy[card1Index].getRank() == handCopy[card2Index].getRank() && handCopy[card1Index].getRank() > 0 && handCopy[card2Index].getRank() > 0)
+				if(handCopy[card1Index].getRank(false,true) == handCopy[card2Index].getRank(false,true) && handCopy[card1Index].getRank(false,true) > 0 && handCopy[card2Index].getRank(false,true) > 0)
 				{
 					var pair = [];
 					
