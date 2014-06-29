@@ -218,7 +218,6 @@ function GameBoard()
 		if(pickCount <= 0)
 		{
 			this.print("Out of cards!!");
-			//this.endGame();
 			return;
 		}
 		
@@ -226,20 +225,19 @@ function GameBoard()
         {
             if (player.hand.length < this.handLimit)
             {
-				drawnCard = this.d.getTopCard();
-				player.hand.push(drawnCard);
+				player.hand.push(this.d.getTopCard());
             }
             else
             { 
 				if(player.isNPC)
 				{
-					this.handContainer.style.borderColor = "red";
-					timer = window.setTimeout(function() { document.getElementById("playerHand").style.borderColor = "black"; }, 1000);
-					this.print(player.name + "'s hand is full.");
+					console.log(player.name + "'s hand is full.");
 				}
 				else
 				{
-					console.log(player.name + "'s hand is full.");
+					this.handContainer.css("border-color","red");
+					timer = window.setTimeout(function() { document.getElementById("playerHand").style.borderColor = "black"; }, 1000);
+					this.print(player.name + "'s hand is full.");
 				}
             }
         }
@@ -269,9 +267,10 @@ function Player(name, isNPC)
         {
             if (this.hand[card].getId() == cardId)
             {
-                return this.hand.splice(this.hand.indexOf(card),1)[0]; 
+                return this.hand.splice(card,1)[0]; 
             }
         }
+		return false;
     }
 	this.checkCardById = function(cardId)
     {
@@ -279,7 +278,7 @@ function Player(name, isNPC)
         {
             if (this.hand[card].getId() == cardId)
             {
-                return this.hand[card];   // loser.hand.splice(loser.hand.indexOf(loserCard),1)[0]
+                return this.hand[card]
             }
         }
 		return false;
@@ -342,7 +341,6 @@ function GoFish()
 
 	$("#playerHand").on("click", ".card", function() {
 		var card = game.game.players[0].checkCardById($(this).attr("id"));
-		alert(card.getId());
 		game.playerChooseCard(card);
 	
 	});
@@ -355,7 +353,6 @@ function GoFish()
 		for(pair in this.game.players[0].p.cardPairs)
 		{
 			pairElement = $("<div></div>").addClass("pair").appendTo(this.playerPairStage);
-            console.log(this.game.players[0].p.cardPairs);
 			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][0]);
 			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][1]);
 		}
@@ -365,8 +362,8 @@ function GoFish()
 	{
 		    var pair = [];
 			
-            pair.push(loser.hand.splice(loser.hand.indexOf(loserCard),1)[0]);
-			pair.push(winner.hand.splice(winner.hand.indexOf(winnerCard),1)[0]);
+            pair.push(loser.getCardById(loserCard.getId()));
+			pair.push(winner.getCardById(winnerCard.getId()));
 			winner.p.cardPairs.push(pair);
 			
             this.game.pickCard(winner);
@@ -416,28 +413,33 @@ function GoFish()
     
     this.checkHandForPairs = function(player)
     {
-        var matchedCard, pairList;
-		pairList = [];
+        var pairList = [];
 		
-        for (cardToMatch in player.hand)
-        {
-            for(card in player.hand)
-            {
-                if(player.hand[cardToMatch].getRank() == player.hand[card].getRank() && player.hand[cardToMatch].getSuit() != player.hand[card].getSuit())
-                {
+		var handCopy = player.hand.slice();
+		for(card1Index = handCopy.length -1; card1Index >= 0; card1Index--)
+		{
+			for(card2Index = card1Index -1; card2Index >= 0; card2Index--)
+			{
+				if(handCopy[card1Index].getRank() == handCopy[card2Index].getRank() && handCopy[card1Index].getRank() > 0 && handCopy[card2Index].getRank() > 0)
+				{
 					var pair = [];
-                    pair.push(player.getCardById(player.hand[card].getId()));
-                    pair.push(player.getCardById(player.hand[cardToMatch].getId()));
-                    pairList.push(pair);
-                    player.p.cardPairs.push(pair);
-                    this.game.print(player.name + " drew a pair of " + pair[0].getRank(false) + "'s"); 
-                }
-            }
-        }
+					
+					pair.push(player.getCardById(handCopy[card1Index].getId()));
+					pair.push(player.getCardById(handCopy[card2Index].getId()));
+					player.p.cardPairs.push(pair);
+					pairList.push(pair);
+					this.game.print(player.name + " drew a pair of " + pair[0].getRank(false) + "'s");
+					handCopy[card1Index] = new Card(0,0); //  Replace matched card with a dummy card to prevent matching it again
+					handCopy[card2Index] = new Card(0,0); 
+					break; // break out of the inner loop because a match has been found
+				}
+			}
+		}
 
-		if(pairList.length > 0) // If player had a match, check hand for any new matches 
+		if(pairList.length > 0) // If player had a match, draw new cards then check hand for any new matches
 		{
 			var cardCount = 2 * pairList.length;
+			
 			if( this.game.d.cards.length > cardCount)
 			{
 				this.game.pickCard(player, cardCount);
@@ -460,16 +462,14 @@ function GoFish()
 			{
 				this.drawPairs();
 			}
-			//player.p.cardPairs.push(pairList);
-            //console.log(pairList)
-                        console.log(this.game.d.cards.length);
+
             if (this.game.d.cards.length < 2)
             {
                 this.endGame();   
             }
             else
             {
-                //this.checkHandForPairs(player);
+                this.checkHandForPairs(player);
             }
 		}
     }
