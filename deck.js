@@ -215,10 +215,10 @@ function GameBoard()
         pickCount = setDefault(pickCount, 1);
         if(this.d.cards.length < pickCount)
 		{
-			pickCount = pickCount - this.d.cards.length;
+			pickCount = this.d.cards.length;
 		}
 		
-		if(pickCount <= 0)
+		if(pickCount == 0)
 		{
 			this.print("Out of cards!!");
 			return false;
@@ -322,7 +322,6 @@ function GoFish()
 	this.endGame = function()
 	{
 		var winnerText;
-		console.log(this);
 		var pairCountPlayer1 = this.game.players[0].p.cardPairs.length;
 		var pairCountPlayer2 = this.game.players[1].p.cardPairs.length;
 		
@@ -344,8 +343,8 @@ function GoFish()
 		this.game.print("- " + this.game.players[1].name + " has " + pairCountPlayer2 + " pairs.");
 		this.game.print("-  ");
 		this.game.print("-  " + winnerText);
+		this.game.print("-  ");
 		this.game.print("-------------------------------");
-		this.game.handContainer.innerHTML = "<h1>Game Over</h1>";
 	}
 
 	$("#playerHand p").on("click", ".card", function() {
@@ -354,16 +353,14 @@ function GoFish()
 	
 	});
 	
-	this.drawPairs = function()
+	this.drawPair = function(pair)
 	{
 		var pairElement;
-		this.playerPairStage.empty(); // Reset for redraw
 		
-		for(pair in this.game.players[0].p.cardPairs)
+		pairElement = $("<div></div>").addClass("pair").appendTo(this.playerPairStage);		
+		for(card in pair)
 		{
-			pairElement = $("<div></div>").addClass("pair").appendTo(this.playerPairStage);
-			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][0]);
-			this.game.drawCard(pairElement, this.game.players[0].p.cardPairs[pair][1]);
+			this.game.drawCard(pairElement, pair[card]);
 		}
 	}
 	
@@ -374,21 +371,21 @@ function GoFish()
             pair.push(loser.getCardById(loserCard.getId()));
 			pair.push(winner.getCardById(winnerCard.getId()));
 			winner.p.cardPairs.push(pair);
+			this.drawPair(pair);
 			
 			if(this.game.d.cards.length >= 2)
 			{
             	this.game.pickCard(winner);
 				this.game.pickCard(loser);
 			}
-			else
+			else if(winner.hand.length == 0 || loser.hand.length == 0)
 			{
-				this.endGame();	
+				this.endGame();
+				return	
 			}
 			
-			this.drawPairs();
 			this.checkHandForPairs(winner);
 			this.checkHandForPairs(loser);
-			//this.game.drawHand(this.game.players[0]);
 	}
 	
     this.playerChooseCard = function(pickedCard)
@@ -456,22 +453,14 @@ function GoFish()
 		if(pairList.length > 0) // If player had a match, draw new cards then check hand for any new matches
 		{
 			var cardCount = 2 * pairList.length;
-			
-			if( this.game.d.cards.length > cardCount)
+			for (pair in pairList)
 			{
-				this.game.pickCard(player, cardCount);
+				this.drawPair(pairList[pair]);
 			}
-			else if(this.game.d.cards.length == 0)
-            {
-                console.log("out of cards. Can't draw hand back up to limit");
-				this.endGame();
-				return
-            }
-            else
+			if(this.game.pickCard(player, cardCount) == false)
 			{
-				this.game.pickCard(player, cardCount - this.game.d.cards.length)
+				return;
 			}
-			
 			if(player.isNPC)
 			{
 				console.log(player.name + "'s Pairs: ");
@@ -479,16 +468,15 @@ function GoFish()
 			}
 			else
 			{
-				this.drawPairs();
+				//this.drawPairs();
 			}
 
             if (this.game.d.cards.length < 2)
             {
-                this.endGame();   
+                //this.endGame();   
             }
             else
             {
-				setTimeout(function() { }, 5000);
                 this.checkHandForPairs(player);
             }
 		}
