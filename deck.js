@@ -371,7 +371,8 @@ function GoFish()
             pair.push(loser.getCardById(loserCard.getId()));
 			pair.push(winner.getCardById(winnerCard.getId()));
 			winner.p.cardPairs.push(pair);
-			this.drawPair(pair);
+			if(!winner.isNPC)
+				this.drawPair(pair);
 			
 			if(this.game.d.cards.length >= 2)
 			{
@@ -453,9 +454,12 @@ function GoFish()
 		if(pairList.length > 0) // If player had a match, draw new cards then check hand for any new matches
 		{
 			var cardCount = 2 * pairList.length;
-			for (pair in pairList)
+			if(!player.isNPC)
 			{
-				this.drawPair(pairList[pair]);
+				for (pair in pairList)
+				{
+					this.drawPair(pairList[pair]);
+				}
 			}
 			if(this.game.pickCard(player, cardCount) == false)
 			{
