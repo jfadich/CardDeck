@@ -70,7 +70,7 @@ function Deck()
         if (!this.isInit)
             this.init(false); // Must set to false to limtit shuffleCount
 
-        shuffleCount = setDefault(shuffleCount,5);
+        shuffleCount = setDefault(shuffleCount,15);
         var temp, randIndex;
 
         for(i = 0; i < shuffleCount;i++)
@@ -145,7 +145,7 @@ function Card(suit, rank)
 function GameBoard()
 {
 
-    this.handLimit = 7;
+    this.handLimit = 6;
 
     this.init = function(canvas)
     {
@@ -161,8 +161,9 @@ function GameBoard()
 
     // Display Methods
     
-    this.drawCard = function(parentElement, card)
+    this.drawCard = function(parentElement, card, animate)
     {
+		animate = setDefault(animate, true);
         var cardContainer;
         if(typeof card == "undefined")
 		{
@@ -170,12 +171,14 @@ function GameBoard()
 		}
 		else
 		{
-			cardContainer = $("<span></span");
-			cardContainer.attr({ id : card.getId() });
-			cardContainer.addClass("card");
+			cardContainer = $("<span></span").attr({ id : card.getId() });
+			cardContainer.addClass("card").addClass(card.getSuit().toLowerCase());
 			cardContainer.text(card.getRank());
-			cardContainer.addClass(card.getSuit().toLowerCase());
 			parentElement.append(cardContainer);
+			if(animate)
+			{
+				cardContainer.hide().slideDown();
+			}
 		}
     }
     
@@ -218,14 +221,19 @@ function GameBoard()
 		if(pickCount <= 0)
 		{
 			this.print("Out of cards!!");
-			return;
+			return false;
 		}
 		
         for(i = 0; i < pickCount; i++)
         {
             if (player.hand.length < this.handLimit)
             {
-				player.hand.push(this.d.getTopCard());
+				drawnCard = this.d.getTopCard()
+				player.hand.push(drawnCard);
+				if(!player.isNPC)
+				{
+					this.drawCard(this.handContainer,drawnCard);
+				}
             }
             else
             { 
@@ -241,9 +249,7 @@ function GameBoard()
 				}
             }
         }
-		
-        if(!player.isNPC)
-            this.drawHand(player);
+
     }
 	
 	this.endGame = function() { } ;
@@ -267,6 +273,10 @@ function Player(name, isNPC)
         {
             if (this.hand[card].getId() == cardId)
             {
+				if(!this.isNPC)
+				{
+					$("#" + cardId).slideUp("normal", function() { $(this).remove() });
+				}
                 return this.hand.splice(card,1)[0]; 
             }
         }
@@ -301,7 +311,6 @@ function GoFish()
     
 		this.playerPairStage = $("<div></div>").addClass("cardPaisrList").appendTo(this.game.leftContainer);
 		
-		this.game.print("Welcome to Go Fish!");
         this.game.pickCard(this.game.players[0], this.game.handLimit);
         this.game.pickCard(this.game.players[1], this.game.handLimit);
         this.checkHandForPairs(this.game.players[0]);
@@ -339,7 +348,7 @@ function GoFish()
 		this.game.handContainer.innerHTML = "<h1>Game Over</h1>";
 	}
 
-	$("#playerHand").on("click", ".card", function() {
+	$("#playerHand p").on("click", ".card", function() {
 		var card = game.game.players[0].checkCardById($(this).attr("id"));
 		game.playerChooseCard(card);
 	
@@ -366,13 +375,20 @@ function GoFish()
 			pair.push(winner.getCardById(winnerCard.getId()));
 			winner.p.cardPairs.push(pair);
 			
-            this.game.pickCard(winner);
-			this.game.pickCard(loser);
+			if(this.game.d.cards.length >= 2)
+			{
+            	this.game.pickCard(winner);
+				this.game.pickCard(loser);
+			}
+			else
+			{
+				this.endGame();	
+			}
 			
 			this.drawPairs();
 			this.checkHandForPairs(winner);
 			this.checkHandForPairs(loser);
-			this.game.drawHand(this.game.players[0]);
+			//this.game.drawHand(this.game.players[0]);
 	}
 	
     this.playerChooseCard = function(pickedCard)
@@ -445,9 +461,11 @@ function GoFish()
 			{
 				this.game.pickCard(player, cardCount);
 			}
-			else if(cardCount == 0)
+			else if(this.game.d.cards.length == 0)
             {
                 console.log("out of cards. Can't draw hand back up to limit");
+				this.endGame();
+				return
             }
             else
 			{
@@ -456,7 +474,7 @@ function GoFish()
 			
 			if(player.isNPC)
 			{
-				console.log(player.name + " Card Pairs: ");
+				console.log(player.name + "'s Pairs: ");
 				console.log(player.p.cardPairs);
 			}
 			else
@@ -470,6 +488,7 @@ function GoFish()
             }
             else
             {
+				setTimeout(function() { }, 5000);
                 this.checkHandForPairs(player);
             }
 		}
